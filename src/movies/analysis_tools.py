@@ -213,6 +213,62 @@ def get_movie_pcountries(filename):
 
     return entries
 
+def get_keyword_of_movie(keyword_field: str) -> list[Keyword]:
+    dicts = json.loads(keyword_field)
+    entries = []
+    for d in dicts:
+        entry = Keyword(keyword_id=d['id'], name=d['name'])
+        entries.append(entry)
+    return entries
+def get_keywords() -> Iterable[Keyword]:
+    df = pd.read_csv('data/tmdb_5000_movies.csv')
+    keyword_list = list(df['keywords'])
+    keywords = []
+    for keyword in keyword_list:
+        entries = get_keyword_of_movie(keyword)
+        keywords.extend(entries)
+    keywords = set(keywords)
+    return keywords
+
+def get_movie_keywords(filename: str):
+    df = pd.read_csv(filename)
+    df_sub = df.loc[:, ['id', 'keywords']]
+    df_as_dict = df_sub.to_dict(orient='records')
+    entries = []
+    for movie in df_as_dict:
+        keywords = json.loads(movie.get('keywords'))
+        for keyword in keywords:
+            entry = MovieKeyword(movie_id=movie.get('id'), keyword_id=keyword['id'])
+            entries.append(entry)
+
+    return entries
+
+def get_pcompanies() -> list[PCompany]:
+    df = pd.read_csv('data/tmdb_5000_movies.csv')
+    pcompanies = list(df['production_companies'])  # list[str]
+    entries = []
+    for pcompany in pcompanies:
+        dicts = json.loads(pcompany)
+        for d in dicts:
+            entry = PCompany(pcompany_id=d['id'], name=d['name'])
+            if entry not in entries:
+                entries.append(entry)
+    return entries
+
+def get_movie_pcompanies(filename):
+    df = pd.read_csv(filename)
+    df_sub = df.loc[:, ['id', 'production_companies']]  # wycinek tabel
+    df_as_dict = df_sub.to_dict(orient='records')
+    entries = []
+    for movie in df_as_dict:
+        pcompanies = json.loads(movie.get('production_companies'))
+        for pcompany in pcompanies:
+            entry = MoviePCompany(movie_id=movie.get('id'), pcompany_id=pcompany['id'])
+            entries.append(entry)
+
+    return entries
+
+
 
 if __name__ == '__main__':
     # df = pd.read_csv('data/tmdb_5000_credits.csv')
@@ -222,4 +278,4 @@ if __name__ == '__main__':
     # check_unique_crew_creditid(crews_)
     # check_assignment_actor_actorid(casts_)
     # find_duplicates_crew(crews_)
-    print(len(get_movie_pcountries('data/tmdb_5000_movies.csv')))
+    print(len(get_movie_pcompanies('data/tmdb_5000_movies.csv')))

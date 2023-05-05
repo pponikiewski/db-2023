@@ -73,3 +73,25 @@ class PCountry:
 class MoviePCountry:
     movie_id: int
     iso_3166_1: str
+
+@dataclass
+class Keyword:
+    keyword_id: int
+    name: str
+
+@dataclass
+class MovieKeyword:
+    movie_id: int
+    keyword_id: int
+
+@dataclass
+class PCompany:
+    pcompany_id: int
+    name: str
+
+@dataclass
+class MoviePCompany:
+    movie_id: int
+    pcompany_id: int
+
+
